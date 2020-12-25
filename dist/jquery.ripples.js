@@ -876,6 +876,7 @@ $.fn.ripples = function(option) {
 		var $this = $(this),
 				data = $this.data('ripples'),
 				options = $.extend({}, Ripples.DEFAULTS, $this.data(), typeof option == 'object' && option);
+        console.log(options)
 
 		if (!data && typeof option == 'string') {
 			return;
