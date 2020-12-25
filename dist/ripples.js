@@ -1,9 +1,9 @@
 
-var gl;
+let gl;
 // var $window = $(window); // There is only one window, so why not cache the jQuery-wrapped window?
 
 function isPercentage(str) {
-  return str[str.length - 1] == '%';
+  return str[str.length - 1] === '%';
 }
 
 /**
@@ -16,7 +16,7 @@ function isPercentage(str) {
  *  - some browsers *do* support rendering to half-floating point textures instead.
  */
 function loadConfig() {
-  var canvas = document.createElement('canvas');
+  const canvas = document.createElement('canvas');
   gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 
   if (!gl) {
@@ -25,14 +25,14 @@ function loadConfig() {
   }
 
   // Load extensions
-  var extensions = {};
+  const extensions = {};
   [
     'OES_texture_float',
     'OES_texture_half_float',
     'OES_texture_float_linear',
     'OES_texture_half_float_linear'
   ].forEach(function (name) {
-    var extension = gl.getExtension(name);
+    const extension = gl.getExtension(name);
     if (extension) {
       extensions[name] = extension;
     }
@@ -43,14 +43,13 @@ function loadConfig() {
     return null;
   }
 
-  var configs = [];
+  const configs = [];
 
   function createConfig(type, glType, arrayType) {
-    var name = 'OES_texture_' + type,
+    const name = 'OES_texture_' + type,
       nameLinear = name + '_linear',
       linearSupport = nameLinear in extensions,
       configExtensions = [name];
-
     if (linearSupport) {
       configExtensions.push(nameLinear);
     }
@@ -77,8 +76,8 @@ function loadConfig() {
   }
 
   // Setup the texture and framebuffer
-  var texture = gl.createTexture();
-  var framebuffer = gl.createFramebuffer();
+  const texture = gl.createTexture();
+  const framebuffer = gl.createFramebuffer();
 
   gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
   gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -88,7 +87,7 @@ function loadConfig() {
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
   // Check for each supported texture type if rendering to it is supported
-  var config = null;
+  let config = null;
 
   for (var i = 0; i < configs.length; i++) {
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 32, 32, 0, gl.RGBA, configs[i].type, null);
@@ -109,13 +108,13 @@ function createImageData(width, height) {
   }
   catch (e) {
     // Fallback for IE
-    var canvas = document.createElement('canvas');
+    const canvas = document.createElement('canvas');
     return canvas.getContext('2d').createImageData(width, height);
   }
 }
 
 function translateBackgroundPosition(value) {
-  var parts = value.split(' ');
+  const parts = value.split(' ');
 
   if (parts.length === 1) {
     switch (value) {
@@ -153,7 +152,7 @@ function translateBackgroundPosition(value) {
 
 function createProgram(vertexSource, fragmentSource, uniformValues) {
   function compileSource(type, source) {
-    var shader = gl.createShader(type);
+    const shader = gl.createShader(type);
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
@@ -162,7 +161,7 @@ function createProgram(vertexSource, fragmentSource, uniformValues) {
     return shader;
   }
 
-  var program = {};
+  const program = {};
 
   program.id = gl.createProgram();
   gl.attachShader(program.id, compileSource(gl.VERTEX_SHADER, vertexSource));
@@ -177,7 +176,8 @@ function createProgram(vertexSource, fragmentSource, uniformValues) {
   program.locations = {};
   gl.useProgram(program.id);
   gl.enableVertexAttribArray(0);
-  var match, name, regex = /uniform (\w+) (\w+)/g, shaderCode = vertexSource + fragmentSource;
+  let match, name;
+  const regex = /uniform (\w+) (\w+)/g, shaderCode = vertexSource + fragmentSource;
   while ((match = regex.exec(shaderCode)) != null) {
     name = match[2];
     program.locations[name] = gl.getUniformLocation(program.id, name);
@@ -192,7 +192,7 @@ function bindTexture(texture, unit) {
 }
 
 function extractUrl(value) {
-  var urlMatch = /url\(["']?([^"']*)["']?\)/.exec(value);
+  const urlMatch = /url\(["']?([^"']*)["']?\)/.exec(value);
   if (urlMatch == null) {
     return null;
   }
@@ -204,7 +204,7 @@ function isDataUri(url) {
   return url.match(/^data:/);
 }
 
-var transparentPixels = createImageData(32, 32);
+const transparentPixels = createImageData(32, 32);
 
 // Extend the css
 const style = document.createElement('style');
@@ -214,7 +214,7 @@ document.querySelector('head').prepend(style);
 // RIPPLES CLASS DEFINITION
 // =========================
 
-var Ripples = function (el, options) {
+const Ripples = function (el, options) {
   var that = this;
 
   this.$el = el;
@@ -252,7 +252,6 @@ var Ripples = function (el, options) {
   });
 
   // Auto-resize when window size changes.
-  // this.updateSize = this.updateSize.bind(this);
   window.addEventListener('resize', () => this.updateSize());
 
   // Init rendertargets for ripple data.
@@ -335,6 +334,28 @@ Ripples.DEFAULTS = {
 
 Ripples.prototype = {
 
+  ripplesMousemove: function (e, dropAtPointer) {
+    dropAtPointer(e);
+  },
+
+  ripplesTouchmove: function (e, dropAtPointer) {
+    var touches = e.originalEvent.changedTouches;
+    for (var i = 0; i < touches.length; i++) {
+      dropAtPointer(touches[i]);
+    }
+  },
+
+  ripplesTouchstart: function (e, dropAtPointer) {
+    var touches = e.originalEvent.changedTouches;
+    for (var i = 0; i < touches.length; i++) {
+      dropAtPointer(touches[i]);
+    }
+  },
+
+  ripplesMousedown: function (e, dropAtPointer) {
+    dropAtPointer(e, true);
+  },
+
   // Set up pointer (mouse + touch) events
   setupPointerEvents: function () {
     var that = this;
@@ -354,42 +375,24 @@ Ripples.prototype = {
     }
 
     // Start listening to pointer events
-    this.$el
+    this.$el.addEventListener('mousemove', (e) => this.ripplesMousemove(e, dropAtPointer));
 
-      // Create regular, small ripples for mouse move and touch events...
-      .addEventListener('mousemove.ripples', function (e) {
-        dropAtPointer(e);
-      })
-    this.$el
-      .addEventListener('touchmove.ripples', function (e) {
-        var touches = e.originalEvent.changedTouches;
-        for (var i = 0; i < touches.length; i++) {
-          dropAtPointer(touches[i]);
-        }
-      })
-    this.$el
-      .addEventListener('touchstart.ripples', function (e) {
-        var touches = e.originalEvent.changedTouches;
-        for (var i = 0; i < touches.length; i++) {
-          dropAtPointer(touches[i]);
-        }
-      })
-    this.$el
-      // ...and only a big ripple on mouse down events.
-      .addEventListener('mousedown.ripples', function (e) {
-        dropAtPointer(e, true);
-      });
+    this.$el.addEventListener('touchmove', (e) => this.ripplesTouchmove(e, dropAtPointer));
+
+    this.$el.addEventListener('touchstart', (e) => this.ripplesTouchstart(e, dropAtPointer));
+
+    this.$el.addEventListener('mousedown', (e) => this.ripplesMousedown(e, dropAtPointer));
   },
 
   // Load the image either from the options or the element's CSS rules.
   loadImage: function () {
-    var that = this;
+    const that = this;
 
     gl = this.context;
-
-    var newImageSource = this.imageUrl ||
+    const $elStyle = window.getComputedStyle(this.$el);
+    const newImageSource = this.imageUrl ||
       extractUrl(this.originalCssBackgroundImage) ||
-      extractUrl(this.$el.style.backgroundImage);
+      extractUrl($elStyle.backgroundImage);
 
     // If image source is unchanged, don't reload it.
     if (newImageSource == this.imageSource) {
@@ -405,7 +408,7 @@ Ripples.prototype = {
     }
 
     // Load the texture from a new image.
-    var image = new Image;
+    const image = new Image;
     image.onload = function () {
       gl = that.context;
 
@@ -505,9 +508,10 @@ Ripples.prototype = {
   },
 
   computeTextureBoundaries: function () {
-    var backgroundSize = this.$el.style.backgroundSize;
-    var backgroundAttachment = this.$el.style.backgroundAttachment;
-    var backgroundPosition = translateBackgroundPosition(this.$el.style.backgroundPosition);
+    const $elStyle = window.getComputedStyle(this.$el);
+    var backgroundSize = $elStyle.backgroundSize;
+    var backgroundAttachment = $elStyle.backgroundAttachment;
+    var backgroundPosition = translateBackgroundPosition($elStyle.backgroundPosition);
 
     // Here the 'container' is the element which the background adapts to
     // (either the chrome window or some element, depending on attachment)
@@ -726,7 +730,8 @@ Ripples.prototype = {
   hideCssBackground: function () {
 
     // Check whether we're changing inline CSS or overriding a global CSS rule.
-    var inlineCss = this.$el[0].style.backgroundImage;
+    const $elStyle = window.getComputedStyle(this.$el);
+    var inlineCss = $elStyle.backgroundImage;
 
     if (inlineCss == 'none') {
       return;
@@ -734,7 +739,7 @@ Ripples.prototype = {
 
     this.originalInlineCss = inlineCss;
 
-    this.originalCssBackgroundImage = this.$el.style.backgroundImage;
+    this.originalCssBackgroundImage = style.backgroundImage;
     this.$el.style.backgroundImage = 'none';
   },
 
@@ -746,8 +751,9 @@ Ripples.prototype = {
   },
 
   dropAtPointer: function (pointer, radius, strength) {
-    var borderLeft = parseInt(this.$el.style.borderLeftWidth) || 0,
-      borderTop = parseInt(this.$el.style.borderTopWidth) || 0;
+    const $elStyle = window.getComputedStyle(this.$el);
+    var borderLeft = parseInt($elStyle.borderLeftWidth) || 0,
+      borderTop = parseInt($elStyle.borderTopWidth) || 0;
 
     this.drop(
       pointer.pageX - this.$el.offsetLeft - borderLeft,
@@ -761,11 +767,10 @@ Ripples.prototype = {
    *  Public methods
    */
   drop: function (x, y, radius, strength) {
-    // console.log(this)
     gl = this.context;
 
-    var elWidth = this.$el.clientWidth;
-    var elHeight = this.$el.clientHeight;
+    var elWidth = this.$el.getBoundingClientRect().width;
+    var elHeight = this.$el.getBoundingClientRect().height;
     var longestSide = Math.max(elWidth, elHeight);
 
     radius = radius / longestSide;
@@ -791,8 +796,8 @@ Ripples.prototype = {
   },
 
   updateSize: function () {
-    var newWidth = this.$el.clientWidth,
-      newHeight = this.$el.clientHeight;
+    var newWidth = this.$el.getBoundingClientRect().width,
+      newHeight = this.$el.getBoundingClientRect().height;
 
     if (newWidth != this.canvas.width || newHeight != this.canvas.height) {
       this.canvas.width = newWidth;
@@ -801,10 +806,12 @@ Ripples.prototype = {
   },
 
   destroy: function () {
-    this.$el
-      .off('.ripples')
-      .removeClass('jquery-ripples')
-      .removeData('ripples');
+    this.$el.removeEventListener('mousemove', this.ripplesMousemove);
+    this.$el.removeEventListener('touchmove', this.ripplesTouchmove);
+    this.$el.removeEventListener('touchstart', this.ripplesTouchstart);
+    this.$el.removeEventListener('mousedown', this.ripplesMousedown);
+    this.$el.classList.remove('jquery-ripples');
+    this.$el.ripples = undefined;
 
     // Make sure the last used context is garbage-collected
     gl = null;
