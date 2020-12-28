@@ -178,7 +178,7 @@
     <div class="error"></div>
 
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script> -->
-    <script src="../dist/ripples.js"></script>
+    <script src="../dist/ripples-es6.js"></script>
     <script>
       ripples("main", {
         resolution: 128,
@@ -191,6 +191,8 @@
         dropRadius: 20, //px
         perturbance: 0.04,
       });
+
+
       // Automatic drops
       setInterval(function () {
         var $el = document.querySelector("main");
@@ -200,6 +202,8 @@
         var strength = 0.04 + Math.random() * 0.04;
         ripples("main", "drop", x, y, dropRadius, strength);
       }, 400);
+
+
       document.querySelector('.js-ripples-pause').addEventListener('click',() => {
         ripples('body', 'pause')
       });
