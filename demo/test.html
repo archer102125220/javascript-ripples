@@ -130,7 +130,7 @@
       <p>It's as easy as:</p>
 
       <pre><code>
-  ripples(<span class="code-string">'body'</span>, <span class="code-cbracket">{</span>
+  Ripples.ripples(<span class="code-string">'body'</span>, <span class="code-cbracket">{</span>
 	resolution: <span class="code-number">512</span>,
 	dropRadius: <span class="code-number">20</span>,
 	perturbance: <span class="code-number">0.04</span>,
@@ -140,7 +140,7 @@
       <p>
         You can add drops programmatically by doing
         <code>
-          ripples(<span class="code-string">'body'</span>,
+          Ripples.ripples(<span class="code-string">'body'</span>,
           <span class="code-string">"drop"</span>, x, y, radius, strength)</code
         >
       </p>
@@ -149,14 +149,14 @@
         And you can change its state:<br />
         <button class="js-ripples-pause" type="button">
           <code>
-            ripples(<span class="code-string">'body'</span>,
+            Ripples.ripples(<span class="code-string">'body'</span>,
             <span class="code-string">"pause"</span>)</code
           >
         </button>
 
         <button class="js-ripples-play" type="button">
           <code>
-            ripples(<span class="code-string">'body'</span>,
+            Ripples.ripples(<span class="code-string">'body'</span>,
             <span class="code-string">"play"</span>)</code
           >
         </button>
@@ -170,7 +170,7 @@
 
     <button class="js-ripples-disable disable">
       Click here if your PC can't handle this effect very well (<code>
-        ripples(<span class="code-string">'body'</span>,
+        Ripples.ripples(<span class="code-string">'body'</span>,
         <span class="code-string">"destroy"</span>)</code
       >)
     </button>
@@ -178,15 +178,15 @@
     <div class="error"></div>
 
     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script> -->
-    <script src="../dist/ripples-es6.js"></script>
+    <script src="../dist/ripples-OOP.js"></script>
     <script>
-      ripples("main", {
+      Ripples.ripples("main", {
         resolution: 128,
         dropRadius: 10, //px
         perturbance: 0.04,
         interactive: false,
       });
-      ripples("body", {
+      Ripples.ripples("body", {
         resolution: 512,
         dropRadius: 20, //px
         perturbance: 0.04,
@@ -200,18 +200,18 @@
         var y = Math.random() * $el.getBoundingClientRect().height;
         var dropRadius = 20;
         var strength = 0.04 + Math.random() * 0.04;
-        ripples("main", "drop", x, y, dropRadius, strength);
+        Ripples.ripples("main", "drop", x, y, dropRadius, strength);
       }, 400);
 
 
       document.querySelector('.js-ripples-pause').addEventListener('click',() => {
-        ripples('body', 'pause')
+        Ripples.ripples('body', 'pause')
       });
       document.querySelector('.js-ripples-play').addEventListener('click',() => {
-        ripples('body', 'play')
+        Ripples.ripples('body', 'play')
       });
       document.querySelector('.js-ripples-disable').addEventListener('click',() => {
-        ripples('body', 'destroy')
+        Ripples.ripples('body', 'destroy')
       });
     </script>
   </body>
