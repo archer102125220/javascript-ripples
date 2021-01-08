@@ -104,7 +104,6 @@ class Ripples {
     function step() {
       if (!that.destroyed) {
         that.step();
-
         requestAnimationFrame(step);
       }
     }
@@ -868,7 +867,7 @@ class Ripples {
     }
   }
 
-  static config
+  static config = Ripples.loadConfig()
 
   static ripples(targetId, option) {
     const args = Array.prototype.slice.call(arguments, Ripples.ripples.length);
@@ -892,5 +891,3 @@ class Ripples {
     }
   }
 }
-
-Ripples.config = Ripples.loadConfig();
